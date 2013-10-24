@@ -4,8 +4,8 @@ require 'issue'
 
 Redmine::Plugin.register :redmine_wiki_sql do
   name 'Redmine Wiki SQL'
-  author 'Rodrigo Ramalho'
-  author_url 'http://www.rodrigoramalho.com/'
+  author 'NewGyu(Rodrigo Ramalho)'
+  author_url 'https://github.com/NewGyu/redmine_wiki_sql'
   description 'Allows you to run SQL queries and have them shown on your wiki in table format'
   version '0.0.1'
 
@@ -13,17 +13,17 @@ Redmine::Plugin.register :redmine_wiki_sql do
     desc "Run SQL query"
     macro :sql do |obj, args, text|
 
-        _sentence = args.join(",")
+        _sentence = text
         _sentence = _sentence.gsub("\\(", "(")
         _sentence = _sentence.gsub("\\)", ")")
         _sentence = _sentence.gsub("\\*", "*")
 
         result = ActiveRecord::Base.connection.execute(_sentence)
         unless result.nil?
-          unless result.num_rows() == 0
+          unless result.size == 0
             column_names = []
-            for columns in result.fetch_fields.each do
-              column_names += columns.name.to_a
+            for f in result.fields.each do
+              column_names << f
             end
 
             _thead = '<tr>'
@@ -33,17 +33,15 @@ Redmine::Plugin.register :redmine_wiki_sql do
             _thead << '</tr>'
 
             _tbody = ''
-            result.each_hash do |record|
-              unless record.nil?
-                _tbody << '<tr>'
-                column_names.each do |column_name|
-                  _tbody << '<td>' + record[column_name].to_s + '</td>'
-                end
-                _tbody << '</tr>'
-              end 
+            result.each do |r|
+              _tbody << '<tr>'
+              r.each do |c|
+                _tbody << "<td>#{c}</td>"
+              end
+              _tbody << '</tr>'
             end
 
-            text = '<table>' << _thead << _tbody << '</table>' 
+            text = '<table class="list">' << _thead << _tbody << '</table>' 
 
             text.html_safe
           else

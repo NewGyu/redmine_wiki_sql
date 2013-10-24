@@ -1,21 +1,30 @@
 This plugins allows a redmine user to run SQL queries inside redmine's wiki pages.
+This is forked from "https://github.com/rorx/redmine_wiki_sql" to support Redmine 2.3.x and multiline query text.
 
 Installation
 
-Follow the default redmine plugin installation steps at http://www.redmine.org/projects/redmine/wiki/Plugins
+1. cd ${YOUR_REDMINE_ROOT}/plugins
+2. git clone https://github.com/NewGyu/redmine_wiki_sql
+3. restart your redmine
+
+Migration is not necessary.
+
+See also : http://www.redmine.org/projects/redmine/wiki/Plugins
 
 Usage:
 
-Put this inside a wiki page: {{sql( *Your Query* )}}
+Put this inside a wiki page: {{sql() *Your Query String*}}
 
 Example:
 
-{{sql(select id as 'ID', subject as 'Subject', DATE_FORMAT\(issues.due_date , '%d/%m/%Y'\) AS 'Due Date' from issues)}}
+{{sql()
+    select id as 'ID', subject as 'Subject', DATE_FORMAT\(issues.due_date , '%d/%m/%Y'\) AS 'Due Date' 
+    from issues
+}}
+
+This plugin supports multiline query text.
 
 Known problems:
 
 - User has to manually escape parenthesis with \
 
-Bug Fixes:
-
-- Can't change column's order [SOLVED]
